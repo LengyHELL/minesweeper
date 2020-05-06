@@ -1,29 +1,21 @@
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <string>
 
-int main(int argc, char* args[]) {
-  SDL_Window* window = NULL;
-  SDL_Surface* screenSurface = NULL;
-
-  if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-    std::cerr << "SDL initialization failed!, SDL_Error: " << SDL_GetError() << std::endl;
-  }
-  else {
-    window = SDL_CreateWindow("Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
-    if (window == NULL) {
-      std::cerr << "Window initialization failed! SDL_Error: " << SDL_GetError() << std::endl;
+#include "assets.hpp"
+int main(int argc, char *argv[]) {
+  Assets assets(100, 100, "lhll.ttf", "images");
+  SDL_Color color = {255, 255, 255, 0};
+  int ticks;
+  while(true) {
+    ticks = SDL_GetTicks();
+    for (int i = 0; i < 10000; i++) {
+      //assets.draw_text("test", 1, color, 0, 0);
+      assets.draw_image("red_cube.png", 1, 10, 10);
     }
-    else {
-      screenSurface = SDL_GetWindowSurface(window);
-
-      SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF ,0xFF, 0xFF));
-      SDL_UpdateWindowSurface(window);
-      SDL_Delay(2000);
-    }
+    assets.render();
+    std::cout << "\r" << SDL_GetTicks() - ticks << "     ";
   }
-
-  SDL_DestroyWindow(window);
-  SDL_Quit();
 
   return 0;
 }
