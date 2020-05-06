@@ -8,14 +8,23 @@
 class Assets {
   SDL_Window* window;
   SDL_Renderer* renderer;
-  SDL_Event* event;
+  SDL_Event event;
   TTF_Font* font;
   std::string image_directory;
   int width;
   int height;
   std::map<std::string, SDL_Texture*> images;
 
+
 public:
+  // user input variables
+  bool exit;
+  const Uint8* keyboard_state;
+  Uint32 mouse_state;
+  int mouse_position_x;
+  int mouse_position_y;
+
+
   // construct, destruct
   Assets(const int width, const int height, const std::string font_path, const std::string image_directory);
   ~Assets();
@@ -24,4 +33,5 @@ public:
   void render();
   void draw_text(const std::string text, const float scale, const SDL_Color color, const int position_x, const int position_y);
   void draw_image(const std::string filename, const float scale, const int position_x, const int position_y);
+  void update_inputs();
 };

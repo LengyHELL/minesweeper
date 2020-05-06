@@ -2,7 +2,7 @@
 #include <iostream>
 #include <filesystem>
 
-Assets::Assets(const int width, const int height, const std::string font_path, const std::string image_directory) : width(width), height(height) {
+Assets::Assets(const int width, const int height, const std::string font_path, const std::string image_directory) : width(width), height(height), exit(false) {
   if(SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cerr << "SDL initialization failed!, SDL_Error: " << SDL_GetError() << std::endl;
   }
@@ -40,6 +40,7 @@ Assets::Assets(const int width, const int height, const std::string font_path, c
       SDL_FreeSurface(surface);
     }
   }
+  update_inputs();
 }
 
 Assets::~Assets() {
@@ -95,4 +96,14 @@ void Assets::draw_image(const std::string filename, const float scale, const int
   rect.y = position_y;
   SDL_QueryTexture(texture, 0, 0, &rect.w, &rect.h);
   SDL_RenderCopy(renderer, texture, NULL, &rect);
+}
+
+void Assets::update_inputs() {
+  while(SDL_PollEvent(&event)) {
+    if (event.type == SDL_QUIT) {
+      exit = true;
+    }
+  }
+  keyboard_state = SDL_GetKeyboardState(NULL);
+  mouse_state = SDL_GetMouseState(&mouse_position_x, &mouse_position_y);
 }
