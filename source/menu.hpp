@@ -1,6 +1,6 @@
 #pragma once
 #include "assets.hpp"
-#include "game.hpp"
+#include "controls.hpp"
 
 class Menu {
   int position_x;
@@ -9,12 +9,16 @@ class Menu {
   int height;
 
 public:
-  Map<std::string, Button> buttons;
-  Map<std::string, Selector> selectors;
-  Map<std::string, Text> texts;
+  // elements
+  std::map<std::string, Button> buttons;
+  std::map<std::string, Selector> selectors;
+  std::map<std::string, Text> texts;
+
+  // constructor ,destructor
+  Menu(const int& position_x, const int& position_y, const int& width, const int& height);
+  ~Menu() {}
 
   // functions
-  void set_select_game(const Assets& assets);
   void update(const Assets& assets);
   void draw(const Assets& assets);
 };

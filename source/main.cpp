@@ -2,34 +2,33 @@
 #include <iostream>
 #include <string>
 
-#include "assets.hpp"
+#include "menu.hpp"
+
 int main(int argc, char *argv[]) {
-  Assets assets(600, 400, "lhll.ttf", 20, "images");
+  SDL_Color tc{60, 60, 60, 0};
+  SDL_Color hc{125, 125, 125, 0};
+  SDL_Color cc{125, 255, 125, 0};
+
+  Assets assets(600, 400, "lhll.ttf", 16, "images");
+
+  Menu select_difficulty(5, 20, 590, 360);
+  select_difficulty.buttons.insert(std::make_pair("easy", Button(20, 80, 200, 40, "Easy", 1, tc, hc, cc, true)));
+  select_difficulty.buttons.insert(std::make_pair("medium", Button(20, 130, 200, 40, "Medium", 1, tc, hc, cc, false)));
+  select_difficulty.selectors.insert(std::make_pair("width", Selector(20, 180, 125, 40, "Width", 1, tc, hc, cc, 10, 100, 30)));
+  select_difficulty.texts.insert(std::make_pair("title", Text(20, 30, "Select difficulty", 2, tc)));
 
   float ticks = 0;
   float frame_time;
   float fps = 0;
   float fps_cap = 60;
 
-  SDL_Color tc{255, 255, 255, 0};
-  SDL_Color hc{125, 125, 125, 0};
-  SDL_Color cc{125, 255, 125, 0};
-  Button button(10, 50, 200, 40, "G", 1, tc, hc, cc, true);
-  Button button2(10, 110, 200, 40, "N", 1, tc, hc, cc, false);
-
-  Selector selector(10, 170, 200, 40, "Select", 1, tc, hc, cc, 0, 100, 50);
-
   while(!assets.exit) {
     assets.update_inputs();
 
-    button.update(assets);
-    button.draw(assets);
-
-    button2.update(assets);
-    button2.draw(assets);
-
-    selector.update(assets);
-    selector.draw(assets);
+    for (int i = 0; i < 100; i++) {
+      select_difficulty.update(assets);
+      select_difficulty.draw(assets);
+    }
 
     assets.render();
 
@@ -38,7 +37,7 @@ int main(int argc, char *argv[]) {
     if (frame_time < (1000 / fps_cap)) {
       SDL_Delay((1000 / fps_cap) - frame_time);
     }
-    assets.draw_text(std::to_string((int)(1000 / frame_time)) + " fps" + std::to_string(button2.selected), 0, 0, tc);
+    assets.draw_text(std::to_string((int)(1000 / frame_time)) + " fps", 0, 0, tc);
   }
 
   return 0;
