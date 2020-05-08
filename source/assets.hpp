@@ -22,6 +22,8 @@ public:
   Uint32 mouse_state;
   int mouse_position_x;
   int mouse_position_y;
+  int mouse_button_down;
+  int mouse_button_up;
 
   // info variables
   const int default_font_size;

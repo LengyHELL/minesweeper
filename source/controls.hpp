@@ -14,7 +14,6 @@ class Button {
   bool on_mouse_down;
   bool mouse_click;
   bool mouse_hover;
-  bool start;
   bool click_lock;
 
 public:

@@ -127,11 +127,20 @@ void Assets::draw_image(const std::string& filename, const int& position_x, cons
 }
 
 void Assets::update_inputs() {
+  mouse_button_up = false;
+  mouse_button_down = false;
   while(SDL_PollEvent(&event)) {
     if (event.type == SDL_QUIT) {
       exit = true;
     }
+    mouse_button_up = (event.type == SDL_MOUSEBUTTONUP);
+    mouse_button_down = (event.type == SDL_MOUSEBUTTONDOWN);
   }
   keyboard_state = SDL_GetKeyboardState(NULL);
-  mouse_state = SDL_GetMouseState(&mouse_position_x, &mouse_position_y);
+  if (mouse_button_up) {
+    SDL_GetMouseState(&mouse_position_x, &mouse_position_y);
+  }
+  else {
+    mouse_state = SDL_GetMouseState(&mouse_position_x, &mouse_position_y);
+  }
 }

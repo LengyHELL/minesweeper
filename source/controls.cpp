@@ -5,7 +5,7 @@
 Button::Button(const int& position_x, const int& position_y, const int& width, const int& height, const std::string& text, const int& text_scale,
 const SDL_Color& text_color, const SDL_Color& hover_color, const SDL_Color& click_color, const bool& on_mouse_down)
 : position_x(position_x), position_y(position_y), width(width), height(height), text(text), text_scale(text_scale), text_color(text_color),
-hover_color(hover_color), click_color(click_color), on_mouse_down(on_mouse_down), selected(false), start(false), click_lock(true) {}
+hover_color(hover_color), click_color(click_color), on_mouse_down(on_mouse_down), selected(false), click_lock(true) {}
 
 void Button::draw(const Assets& assets) {
   SDL_Color* color = NULL;
@@ -52,13 +52,10 @@ void Button::update(const Assets& assets) {
   mouse_click = mouse_hover && mouse_right && !click_lock;
 
   if (on_mouse_down) {
-    selected = mouse_click;
+    selected = mouse_click && assets.mouse_button_down;
   }
   else {
-    if (start && !mouse_right) {
-      selected = true;
-    }
-    start = mouse_click;
+    selected = mouse_click && assets.mouse_button_up;
   }
 }
 
