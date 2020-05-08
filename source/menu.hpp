@@ -3,10 +3,10 @@
 #include "game.hpp"
 
 class Menu {
-  int menu_position_x;
-  int menu_position_y;
-  int menu_width;
-  int menu_height;
+  int position_x;
+  int position_y;
+  int width;
+  int height;
 
 public:
   Map<std::string, Button> buttons;
@@ -15,6 +15,6 @@ public:
 
   // functions
   void set_select_game(const Assets& assets);
-  void update_menu(const Assets& assets);
-  void draw_menu(const Assets& assets);
+  void update(const Assets& assets);
+  void draw(const Assets& assets);
 };

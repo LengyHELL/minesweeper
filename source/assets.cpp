@@ -94,7 +94,7 @@ void Assets::draw_text(const std::string& text, const int& position_x, const int
   }
 }
 
-void Assets::draw_image(const std::string& filename, const int& position_x, const int& position_y, const SDL_Color* color, SDL_Rect* area, const SDL_Rect* size) const {
+void Assets::draw_image(const std::string& filename, const int& position_x, const int& position_y, const SDL_Color* color, SDL_Rect* area, const SDL_Rect* size, const float& angle) const {
   if (size != NULL) {
     if ((size->w < 1) || (size->h < 1)) {
       std::cerr << "Assets::draw_image: size too small " + filename << std::endl;
@@ -119,7 +119,7 @@ void Assets::draw_image(const std::string& filename, const int& position_x, cons
   if (color != NULL) {
     SDL_SetTextureColorMod(texture, color->r, color->g, color->b);
   }
-  SDL_RenderCopy(renderer, texture, NULL, &rect);
+  SDL_RenderCopyEx(renderer, texture, NULL, &rect, angle, NULL, SDL_FLIP_NONE);
   SDL_SetTextureColorMod(texture, 255, 255, 255);
 
   if (area != NULL) {
@@ -144,31 +144,161 @@ void Assets::update_inputs() {
 
 // Button
 
-Button::Button(const int& button_position_x, const int& button_position_y, const int& button_width, const int& button_height, const std::string& button_text,
-const int& button_text_scale, const SDL_Color& button_text_color, const SDL_Color& button_hover_color)
-: button_position_x(button_position_x), button_position_y(button_position_y), button_width(button_width), button_height(button_height), button_text(button_text),
-button_text_scale(button_text_scale), button_text_color(button_text_color), button_hover_color(button_hover_color) {}
+Button::Button(const int& position_x, const int& position_y, const int& width, const int& height, const std::string& text, const int& text_scale,
+const SDL_Color& text_color, const SDL_Color& hover_color, const SDL_Color& click_color, const bool& on_mouse_down)
+: position_x(position_x), position_y(position_y), width(width), height(height), text(text), text_scale(text_scale), text_color(text_color),
+hover_color(hover_color), click_color(click_color), on_mouse_down(on_mouse_down), selected(false), start(false), click_lock(true) {}
 
-void Button::draw_button(const Assets& assets) {
-  SDL_Rect size{0, 0, button_width, button_height};
-  if (mouse_hover) {
-    assets.draw_image("red_cube.png", button_position_x, button_position_y, &button_hover_color, NULL, &size);
+void Button::draw(const Assets& assets) {
+  SDL_Color* color = NULL;
+  if (mouse_click) {
+    color = &click_color;
   }
-  else {
-    assets.draw_image("red_cube.png", button_position_x, button_position_y, NULL, NULL, &size);
+  else if (mouse_hover) {
+    color = &hover_color;
   }
 
-  int scaled_font_size = assets.default_font_size * button_text_scale;
-  int text_position_x = button_position_x + (int)scaled_font_size / 2;
-  int text_position_y = button_position_y + (int)(button_height - scaled_font_size) / 2;
-  assets.draw_text(button_text, text_position_x, text_position_y, button_text_color, NULL, button_text_scale);
+  SDL_Rect area;
+  SDL_Rect size{0, 0, width, height};
+  SDL_Rect corner_size{0, 0, 10, 10};
+  SDL_Rect vertical_size{0, 0, corner_size.w, size.h - corner_size.h * 2};
+  SDL_Rect horizontal_size{0, 0, size.w - corner_size.w * 2, corner_size.h};
+  assets.draw_image("button_body.png", position_x, position_y, color, NULL, &size);
+  assets.draw_image("button_corner.png", position_x, position_y, color, &area, &corner_size);
+  assets.draw_image("button_side_h.png", area.x + area.w, area.y, color, &area, &horizontal_size);
+  assets.draw_image("button_corner.png", area.x + area.w, area.y, color, &area, &corner_size, 90);
+  assets.draw_image("button_side_v.png", area.x, area.y + area.h, color, &area, &vertical_size);
+  assets.draw_image("button_corner.png", area.x, area.y + area.h, color, &area, &corner_size, 180);
+  assets.draw_image("button_side_h.png", area.x - horizontal_size.w, area.y, color, &area, &horizontal_size, 180);
+  assets.draw_image("button_corner.png", area.x - corner_size.w, area.y, color, &area, &corner_size, 270);
+  assets.draw_image("button_side_v.png", area.x, area.y - vertical_size.h, color, NULL, &vertical_size, 180);
+
+  int scaled_font_size = assets.default_font_size * text_scale;
+  int text_position_x = position_x + (int)scaled_font_size / 2;
+  int text_position_y = position_y + (int)(height - scaled_font_size) / 2;
+  assets.draw_text(text, text_position_x, text_position_y, text_color, NULL, text_scale);
 }
 
-void Button::update_button(const Assets& assets) {
-  bool x_in_range = (assets.mouse_position_x >= button_position_x) && (assets.mouse_position_x <= (button_position_x + button_width));
-  bool y_in_range = (assets.mouse_position_y >= button_position_y) && (assets.mouse_position_y <= (button_position_y + button_height));
+void Button::update(const Assets& assets) {
+  bool x_in_range = (assets.mouse_position_x >= position_x) && (assets.mouse_position_x <= (position_x + width));
+  bool y_in_range = (assets.mouse_position_y >= position_y) && (assets.mouse_position_y <= (position_y + height));
   mouse_hover = x_in_range && y_in_range;
 
   bool mouse_right = assets.mouse_state == SDL_BUTTON(SDL_BUTTON_LEFT);
-  selected = mouse_hover && mouse_right;
+  if (!mouse_right) {
+    click_lock = false;
+  }
+  if (!mouse_hover && mouse_right) {
+    click_lock = true;
+  }
+  mouse_click = mouse_hover && mouse_right && !click_lock;
+
+  if (on_mouse_down) {
+    selected = mouse_click;
+  }
+  else {
+    if (start && !mouse_right) {
+      selected = true;
+    }
+    start = mouse_click;
+  }
+}
+
+
+
+// Button
+
+Selector::Selector(const int& position_x, const int& position_y, const int& width, const int& height, const std::string& text, const int& text_scale,
+const SDL_Color& text_color, const SDL_Color& hover_color, const SDL_Color& click_color, const int& range_min, const int& range_max, const int& range_actual)
+: position_x(position_x), position_y(position_y), width(width), height(height), text(text), text_scale(text_scale), text_color(text_color),
+hover_color(hover_color), click_color(click_color), range_min(range_min), range_max(range_max), range_actual(range_actual), click_lock(true),
+repeat_timer_total(1000), repeat_timer(0), repeats(1) {}
+
+void Selector::draw(const Assets& assets) {
+  int scaled_font_size = assets.default_font_size * text_scale;
+  SDL_Color* color_up = NULL;
+  SDL_Color* color_down = NULL;
+  if (mouse_click_up) {
+    color_up = &click_color;
+  }
+  else if (mouse_hover_up) {
+    color_up = &hover_color;
+  }
+  if (mouse_click_down) {
+    color_down = &click_color;
+  }
+  else if (mouse_hover_down) {
+    color_down = &hover_color;
+  }
+
+  SDL_Rect area;
+  SDL_Rect size{0, 0, width, height};
+  SDL_Rect button_size{0, 0, scaled_font_size, (int)height / 2};
+  SDL_Rect corner_size{0, 0, 10, 10};
+  SDL_Rect vertical_size{0, 0, corner_size.w, size.h - corner_size.h * 2};
+  SDL_Rect horizontal_size{0, 0, size.w - (corner_size.w + button_size.w), corner_size.h};
+  assets.draw_image("button_body.png", position_x, position_y, NULL, NULL, &size);
+  assets.draw_image("button_corner.png", position_x, position_y, NULL, &area, &corner_size);
+  assets.draw_image("button_side_h.png", area.x + area.w, area.y, NULL, &area, &horizontal_size);
+  assets.draw_image("selector_arrow.png", area.x + area.w, area.y, color_up, &area, &button_size);
+  assets.draw_image("selector_arrow.png", area.x, area.y + area.h, color_down, &area, &button_size, 180);
+  assets.draw_image("button_side_h.png", area.x - horizontal_size.w, area.y + button_size.h - horizontal_size.h, NULL, &area, &horizontal_size, 180);
+  assets.draw_image("button_corner.png", area.x - corner_size.w, area.y, NULL, &area, &corner_size, 270);
+  assets.draw_image("button_side_v.png", area.x, area.y - vertical_size.h, NULL, NULL, &vertical_size, 180);
+
+  int text_position_x = position_x + (int)scaled_font_size / 2;
+  int text_position_y = position_y + (int)(height - scaled_font_size) / 2;
+  assets.draw_text(text, text_position_x, text_position_y, text_color, NULL, text_scale);
+
+  text_position_x = (position_x + width) - (int)(4 * scaled_font_size);
+  assets.draw_text(std::to_string(range_actual), text_position_x, text_position_y, text_color, NULL, text_scale);
+}
+
+void Selector::update(const Assets& assets) {
+  bool x_in_range = (assets.mouse_position_x >= (position_x + width - assets.default_font_size * text_scale)) && (assets.mouse_position_x <= (position_x + width));
+  bool up_y_in_range = (assets.mouse_position_y >= position_y) && (assets.mouse_position_y < (position_y + (int)height / 2));
+  bool down_y_in_range = (assets.mouse_position_y >= (position_y + (int)height / 2)) && (assets.mouse_position_y <= (position_y + height));
+  mouse_hover_up = x_in_range && up_y_in_range;
+  mouse_hover_down = x_in_range && down_y_in_range;
+
+  bool mouse_right = assets.mouse_state == SDL_BUTTON(SDL_BUTTON_LEFT);
+  if (!mouse_right) {
+    click_lock = false;
+  }
+  if (!mouse_hover_up && !mouse_hover_down && mouse_right) {
+    click_lock = true;
+  }
+  mouse_click_up = mouse_hover_up && mouse_right && !click_lock;
+  mouse_click_down = mouse_hover_down && mouse_right && !click_lock;
+
+  if (mouse_click_up || mouse_click_down) {
+    if (repeat_timer == 0) {
+      if (mouse_click_up) {
+        if (range_actual < range_max) {
+          range_actual += 1;
+        }
+      }
+      else if (mouse_click_down) {
+        if (range_actual > range_min) {
+          range_actual -= 1;
+        }
+      }
+      repeat_timer = repeat_timer_total * (1 / repeats);
+      if (repeat_timer < 100) {
+        repeat_timer = 100;
+      }
+      repeats++;
+    }
+  }
+  else {
+    repeats = 1;
+    repeat_timer = 0;
+  }
+
+  frame_time = SDL_GetTicks() - ticks;
+  ticks += frame_time;
+  repeat_timer -= frame_time;
+  if (repeat_timer < 0) {
+    repeat_timer = 0;
+  }
 }
