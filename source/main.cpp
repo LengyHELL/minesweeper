@@ -17,10 +17,10 @@ int main(int argc, char *argv[]) {
   Menu select_difficulty(5, 20, 590, 360);
   select_difficulty.buttons.insert(std::make_pair("restart", Button(20, 80, 200, 40, "Restart", 1, tc, hc, cc, false)));
   select_difficulty.buttons.insert(std::make_pair("medium", Button(20, 130, 200, 40, "Test", 1, tc, hc, cc, true)));
-  select_difficulty.selectors.insert(std::make_pair("width", Selector(20, 180, 125, 40, "Width", 1, tc, hc, cc, 10, 100, 30)));
+  select_difficulty.selectors.insert(std::make_pair("width", Selector(20, 180, 125, 48, "Width", 1, tc, hc, cc, 10, 100, 30)));
   select_difficulty.texts.insert(std::make_pair("title", Text(20, 30, "Select difficulty", 2, tc)));
 
-  Game game(250, 80, 9, 9, 10, hc, cc, 24);
+  Game game(250, 80, 9, 9, 1, hc, cc, 24);
 
 
   float ticks = 0;
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     if (frame_time < (1000 / fps_cap)) {
       SDL_Delay((1000 / fps_cap) - frame_time);
     }
-    assets.draw_text(std::to_string((int)(1000 / frame_time)) + " fps ," + std::to_string((int)game.get_timer() / 1000) + " sec", 0, 0, tc);
+    assets.draw_text(std::to_string((int)(1000 / frame_time)) + " fps ," + std::to_string((int)game.get_timer() / 1000) + " sec"  + ", " + std::to_string(game.get_flags()), 0, 0, tc);
   }
 
   return 0;

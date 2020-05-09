@@ -18,21 +18,21 @@ void Button::draw(const Assets& assets) {
 
   SDL_Rect area;
   SDL_Rect size{0, 0, width, height};
-  SDL_Rect corner_size{0, 0, 10, 10};
+  SDL_Rect corner_size{0, 0, 3, 3};
   SDL_Rect vertical_size{0, 0, corner_size.w, size.h - corner_size.h * 2};
   SDL_Rect horizontal_size{0, 0, size.w - corner_size.w * 2, corner_size.h};
   assets.draw_image("button_body.png", position_x, position_y, color, NULL, &size);
-  assets.draw_image("button_corner.png", position_x, position_y, color, &area, &corner_size);
-  assets.draw_image("button_side_h.png", area.x + area.w, area.y, color, &area, &horizontal_size);
-  assets.draw_image("button_corner.png", area.x + area.w, area.y, color, &area, &corner_size, 90);
-  assets.draw_image("button_side_v.png", area.x, area.y + area.h, color, &area, &vertical_size);
-  assets.draw_image("button_corner.png", area.x, area.y + area.h, color, &area, &corner_size, 180);
-  assets.draw_image("button_side_h.png", area.x - horizontal_size.w, area.y, color, &area, &horizontal_size, 180);
-  assets.draw_image("button_corner.png", area.x - corner_size.w, area.y, color, &area, &corner_size, 270);
-  assets.draw_image("button_side_v.png", area.x, area.y - vertical_size.h, color, NULL, &vertical_size, 180);
+  assets.draw_image("button_corner_top_left.png", position_x, position_y, color, &area, &corner_size);
+  assets.draw_image("button_side_top.png", area.x + area.w, area.y, color, &area, &horizontal_size);
+  assets.draw_image("button_corner_top_right.png", area.x + area.w, area.y, color, &area, &corner_size);
+  assets.draw_image("button_side_right.png", area.x, area.y + area.h, color, &area, &vertical_size);
+  assets.draw_image("button_corner_bottom_right.png", area.x, area.y + area.h, color, &area, &corner_size);
+  assets.draw_image("button_side_bottom.png", area.x - horizontal_size.w, area.y, color, &area, &horizontal_size);
+  assets.draw_image("button_corner_bottom_left.png", area.x - corner_size.w, area.y, color, &area, &corner_size);
+  assets.draw_image("button_side_left.png", area.x, area.y - vertical_size.h, color, NULL, &vertical_size);
 
   int scaled_font_size = assets.default_font_size * text_scale;
-  int text_position_x = position_x + (int)scaled_font_size;
+  int text_position_x = position_x + (int)scaled_font_size / 2;
   int text_position_y = position_y + (int)(height - scaled_font_size) / 2;
   assets.draw_text(text, text_position_x, text_position_y, text_color, NULL, text_scale);
 }
@@ -88,20 +88,25 @@ void Selector::draw(const Assets& assets) {
 
   SDL_Rect area;
   SDL_Rect size{0, 0, width, height};
-  SDL_Rect button_size{0, 0, (int)(scaled_font_size * 1.5), (int)height / 2};
-  SDL_Rect corner_size{0, 0, 10, 10};
+  SDL_Rect button_size{0, 0, (int)height / 2, (int)height / 2};
+  SDL_Rect corner_size{0, 0, 3, 3};
   SDL_Rect vertical_size{0, 0, corner_size.w, size.h - corner_size.h * 2};
   SDL_Rect horizontal_size{0, 0, size.w - (corner_size.w + button_size.w), corner_size.h};
   assets.draw_image("button_body.png", position_x, position_y, NULL, NULL, &size);
-  assets.draw_image("button_corner.png", position_x, position_y, NULL, &area, &corner_size);
-  assets.draw_image("button_side_h.png", area.x + area.w, area.y, NULL, &area, &horizontal_size);
-  assets.draw_image("selector_arrow.png", area.x + area.w, area.y, color_up, &area, &button_size);
-  assets.draw_image("selector_arrow.png", area.x, area.y + area.h, color_down, &area, &button_size, 180);
-  assets.draw_image("button_side_h.png", area.x - horizontal_size.w, area.y + button_size.h - horizontal_size.h, NULL, &area, &horizontal_size, 180);
-  assets.draw_image("button_corner.png", area.x - corner_size.w, area.y, NULL, &area, &corner_size, 270);
-  assets.draw_image("button_side_v.png", area.x, area.y - vertical_size.h, NULL, NULL, &vertical_size, 180);
+  assets.draw_image("button_corner_top_left.png", position_x, position_y, NULL, &area, &corner_size);
+  assets.draw_image("button_side_top.png", area.x + area.w, area.y, NULL, &area, &horizontal_size);
+  assets.draw_image("button_corner_top_right.png", area.x + area.w, area.y, NULL, &area, &corner_size);
 
-  int text_position_x = position_x + (int)scaled_font_size;
+  assets.draw_image("selector_arrow_up.png", area.x + area.w, area.y, color_up, NULL, &button_size);
+  assets.draw_image("selector_arrow_down.png", area.x + area.w, area.y + button_size.h, color_down, NULL, &button_size);
+
+  assets.draw_image("button_side_right.png", area.x, area.y + area.h, NULL, &area, &vertical_size);
+  assets.draw_image("button_corner_bottom_right.png", area.x, area.y + area.h, NULL, &area, &corner_size);
+  assets.draw_image("button_side_bottom.png", area.x - horizontal_size.w, area.y, NULL, &area, &horizontal_size);
+  assets.draw_image("button_corner_bottom_left.png", area.x - corner_size.w, area.y, NULL, &area, &corner_size);
+  assets.draw_image("button_side_left.png", area.x, area.y - vertical_size.h, NULL, NULL, &vertical_size);
+
+  int text_position_x = position_x + (int)scaled_font_size / 2;
   int text_position_y = position_y + (int)(height - scaled_font_size) / 2;
   assets.draw_text(text, text_position_x, text_position_y, text_color, NULL, text_scale);
 

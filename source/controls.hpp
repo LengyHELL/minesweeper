@@ -45,8 +45,6 @@ class Selector {
   bool mouse_hover_up;
   bool mouse_hover_down;
   bool click_lock;
-  int range_min;
-  int range_max;
   float repeat_timer_total;
   float repeat_timer;
   int repeats;
@@ -55,6 +53,8 @@ class Selector {
 
 public:
   // variables
+  int range_min;
+  int range_max;
   int range_actual;
 
   // constructor, destructor

@@ -116,7 +116,15 @@ void Game::update(const Assets& assets) {
       }
       else if (mouse_right) {
         if (assets.mouse_button_down && first_click) {
-          actual.is_flag = !actual.is_flag;
+          if (actual.is_flag || (flags > 0)) {
+            actual.is_flag = !actual.is_flag;
+            if (actual.is_flag) {
+              flags--;
+            }
+            else {
+              flags++;
+            }
+          }
         }
       }
       else {
@@ -186,6 +194,16 @@ void Game::update(const Assets& assets) {
         Block& actual = blocks[i][j];
         if (actual.is_bomb) {
           actual.is_shown = true;
+        }
+      }
+    }
+  }
+  else if (game_over && game_won) {
+    for (int i = 0; i < table_width; i++) {
+      for (int j = 0; j < table_height; j++) {
+        Block& actual = blocks[i][j];
+        if (actual.is_bomb) {
+          actual.is_flag = true;
         }
       }
     }
