@@ -23,10 +23,13 @@ int Game::check_sides(const int& x, const int& y, const bool& do_bombs) {
 
 void Game::generate(const int& x, const int& y) {
   std::vector<int> selection_array;
-  int count = 0;
+  int range = 0;
+  if (bombs <= (table_width * table_height) - 9) {
+    range = 1;
+  }
   for (int w = 0; w < table_width; w++) {
     for (int h = 0; h < table_height; h++) {
-      if (!((w >= x - 1) && (w <= x + 1) && (h >= y - 1) && (h <= y + 1))) {
+      if (!((w >= x - range) && (w <= x + range) && (h >= y - range) && (h <= y + range))) {
         selection_array.push_back(w);
         selection_array.push_back(h);
       }
@@ -86,8 +89,11 @@ void Game::update(const Assets& assets) {
     timer += frame_time;
   }
 
-  int x_at_table = (int)(assets.mouse_position_x - position_x) / block_size.w;
-  int y_at_table = (int)(assets.mouse_position_y - position_y) / block_size.h;
+  int x_relative = (int)(assets.mouse_position_x - position_x);
+  int y_relative = (int)(assets.mouse_position_y - position_y);
+
+  int x_at_table = x_relative / block_size.w;
+  int y_at_table = y_relative / block_size.h;
 
   for (int i = 0; i < table_width; i++) {
     for (int j = 0; j < table_height; j++) {
@@ -96,7 +102,7 @@ void Game::update(const Assets& assets) {
     }
   }
 
-  if ((x_at_table >= 0) && (x_at_table < table_width) && (y_at_table >= 0) && (y_at_table < table_height) && !game_over) {
+  if ((x_relative >= 0) && (x_relative < (table_width * block_size.w)) && (y_relative >= 0) && (y_relative < (table_height * block_size.h)) && !game_over) {
     Block& actual = blocks[x_at_table][y_at_table];
     if (!actual.is_shown) {
       bool mouse_left = assets.mouse_state == SDL_BUTTON(SDL_BUTTON_LEFT);

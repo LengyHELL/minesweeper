@@ -144,3 +144,9 @@ void Assets::update_inputs() {
     mouse_state = SDL_GetMouseState(&mouse_position_x, &mouse_position_y);
   }
 }
+
+void Assets::resize_window(const int& new_width, const int& new_height) {
+  width = new_width;
+  height = new_height;
+  SDL_SetWindowSize(window, width, height);
+}

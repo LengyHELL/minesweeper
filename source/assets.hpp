@@ -38,4 +38,5 @@ public:
   void draw_text(const std::string& text, const int& position_x, const int& position_y, const SDL_Color& color, SDL_Rect* area = NULL, const float& scale = 1) const;
   void draw_image(const std::string& filename, const int& position_x, const int& position_y, const SDL_Color* color = NULL, SDL_Rect* area = NULL, const SDL_Rect* size = NULL, const float& angle = 0) const;
   void update_inputs();
+  void resize_window(const int& width, const int& height);
 };

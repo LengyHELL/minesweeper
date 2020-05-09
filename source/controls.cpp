@@ -115,6 +115,10 @@ void Selector::draw(const Assets& assets) {
 }
 
 void Selector::update(const Assets& assets) {
+  if (range_actual > range_max) {
+    range_actual = range_max;
+  }
+  
   bool x_in_range = (assets.mouse_position_x >= (position_x + width - assets.default_font_size * text_scale)) && (assets.mouse_position_x <= (position_x + width));
   bool up_y_in_range = (assets.mouse_position_y >= position_y) && (assets.mouse_position_y < (position_y + (int)height / 2));
   bool down_y_in_range = (assets.mouse_position_y >= (position_y + (int)height / 2)) && (assets.mouse_position_y <= (position_y + height));

@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "assets.hpp"
-#include "controls.hpp"
 
 struct Block {
   Block() : is_bomb(false), is_flag(false), is_shown(false), hovered(false), clicked(false) {}
@@ -50,4 +49,7 @@ public:
   // getters
   float get_timer() const { return timer; }
   int get_flags() const { return flags; }
+  int get_width() const { return table_width; }
+  int get_height() const { return table_height; }
+  int get_bombs() const { return bombs; }
 };

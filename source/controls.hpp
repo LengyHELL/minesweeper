@@ -70,11 +70,13 @@ public:
 class Text {
   int position_x;
   int position_y;
-  std::string text;
   int text_scale;
   SDL_Color text_color;
 
 public:
+  // variables
+  std::string text;
+
   // constructor, destructor
   Text(const int& position_x, const int& position_y, const std::string& text, const int& text_scale, const SDL_Color& text_color);
   ~Text() {}
